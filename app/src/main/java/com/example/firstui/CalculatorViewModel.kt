@@ -14,7 +14,12 @@ class CalculatorViewModel: ViewModel(){
 
     private val _resultText = MutableLiveData("0")
     val resultText: LiveData<String> = _resultText
+
+    private val _errorText = MutableLiveData("")
+    val errorText: LiveData<String> = _errorText
+
     fun onButtonClick(btn: String) {
+        _errorText.value = ""
         _equationText.value?.let {
             if(btn == "AC") {
                 _equationText.value = ""
@@ -29,27 +34,25 @@ class CalculatorViewModel: ViewModel(){
                 return
             }
             if(btn == "=") {
-                if(operators.contains(it[it.length - 1])) {
-                    return
-                }
                 try {
                     _resultText.value = calculateResult(_equationText.value.toString())
                 }
                 catch (err: Exception) {
                     Log.e("Error", err.toString())
+                    _errorText.value = "Invalid Expression"
+                    _equationText.value = ""
+                    _resultText.value = "0"
+                    return
                 }
                 _equationText.value = _resultText.value
                 return
             }
-            if(it.isNotEmpty()) {
-                if((it[it.length - 1] == '0' && btn == "0") ||
-                    (it.contains(".") && btn == ".") ||
-                    (operators.contains(btn[0]) && operators.contains(it[it.length - 1]))
-                    ) {
-                    return
-                }
+            if(_equationText.value == "0") {
+                _equationText.value = btn
             }
-            _equationText.value = it + btn
+            else {
+                _equationText.value = it + btn
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.firstui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +12,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,11 +38,12 @@ val buttonList = listOf(
 fun Calculator(modifier: Modifier, viewModel: CalculatorViewModel) {
     val equationText = viewModel.equationText.observeAsState()
     val resultText = viewModel.resultText.observeAsState()
+    var errorText = viewModel.errorText.observeAsState()
 
     Box(modifier=modifier) {
         Column (
             horizontalAlignment = Alignment.End,
-            modifier = Modifier.fillMaxSize().padding(18.dp),
+            modifier = Modifier.fillMaxSize().background(Color(0x0DD0142B)).padding(18.dp),
         ){
             Text(
                 text = equationText.value?:"",
@@ -54,15 +55,27 @@ fun Calculator(modifier: Modifier, viewModel: CalculatorViewModel) {
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier=Modifier.weight(1f))
-            Text(
-                text=resultText.value?:"0",
-                style = TextStyle(
-                    fontSize = 60.sp,
-                    textAlign = TextAlign.End,
-                ),
-                maxLines = 2
-            )
-
+            if(errorText.value != "") {
+               Text(
+                   text = errorText.value?:"",
+                   style = TextStyle(
+                       fontSize = 40.sp,
+                       textAlign = TextAlign.End,
+                       color = Color.Red
+                   ),
+                   maxLines = 2
+               )
+            }
+            else {
+                Text(
+                    text=resultText.value?:"0",
+                    style = TextStyle(
+                        fontSize = 60.sp,
+                        textAlign = TextAlign.End,
+                    ),
+                    maxLines = 2
+                )
+            }
             Spacer(modifier = Modifier.height(18.dp))
 
             LazyVerticalGrid(
@@ -101,5 +114,4 @@ fun getColor(btn: String): Color {
     if (btn == "/" || btn == "*" || btn == "+" || btn == "-" || btn == "=")
         return Color(0xFFFF9800)
     return Color(0xFF00C8C9)
-
 }
